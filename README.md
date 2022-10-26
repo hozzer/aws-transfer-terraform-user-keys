@@ -34,7 +34,7 @@ It's worth noting a quick comment on [Resource Blocks](https://developer.hashico
 As the current (4.36.1) `aws` Terraform provider  only supports a single user-to-key reference for `aws_transfer_user` and `aws_transfer_ssh_key` resources, we have to flatten the data so it can be accessed by the [`for_each`](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each) meta-argument. _This is a slight over simplification and not strictly true, but if you're reading this you likely know exactly what I mean._
 
 Let's define a local variable `raw_users` which mimics what we have in our JSON above:
-```python
+```terraform
 locals {
   raw_users = [
     {
@@ -110,7 +110,7 @@ where `users`, during the first iteration, would look like this:
 This allows us to get each `username` by calling `users.username`.
 
 Next, we must iterate over each element of `ssh_public_keys`:
-```terraform
+```
 for key in users.ssh_public_keys : {
 	...
 }
@@ -118,7 +118,7 @@ for key in users.ssh_public_keys : {
 which allows us to get each `ssh_public_key` by calling `key`.
 
 Now we can build objects with all the necessary data for describing resources:
-```terraform
+```
 username       = users.username,
 ssh_public_key = key,
 index          = index(users.ssh_public_keys, key)
