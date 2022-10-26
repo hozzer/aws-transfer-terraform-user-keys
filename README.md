@@ -75,17 +75,17 @@ Let's create another local variable `flat_users` which will iterate over `local.
 ```terraform
 locals {
 
-	...
-
-	flat_users =  flatten([
-		for users in local.raw_users : [
-			for key in users.ssh_public_keys : {
-				username       = users.username,
-				ssh_public_key = key,
-				index          = index(users.ssh_public_keys, key)
-			}
-		]
-	])
+  ...
+  
+  flat_users =  flatten([
+    for users in local.raw_users : [
+      for key in users.ssh_public_keys : {
+         username       = users.username,
+         ssh_public_key = key,
+         index          = index(users.ssh_public_keys, key)
+      }
+    ]
+  ])
 }
 ```
 
@@ -216,7 +216,7 @@ From the docs:
 
 ```terraform
 resource "aws_transfer_user" "this" {
-	for_each = { for user in local.raw_users : user.username => user }
+  for_each = { for user in local.raw_users : user.username => user }
 
   server_id      = aws_transfer_server.this.id
   user_name      = each.value.username
@@ -249,9 +249,9 @@ $ terraform console
 and for the SSH keys:
 ```terraform
 resource "aws_transfer_ssh_key" "this" {
-	for_each = {
-		for user in local.flat_users : "${user.username}-${user.index}" => user
-	}
+  for_each = {
+    for user in local.flat_users : "${user.username}-${user.index}" => user
+  }
 
   server_id = aws_transfer_server.this.id
   user_name = each.value.username
@@ -288,12 +288,12 @@ $ terraform console
 }
 ```
 
-If you run a Terraform plan you should see resources like the following:
+If you run a Terraform plan you should see resources like these in the logs:
 ```
-aws_transfer_user.this["ben"]
-aws_transfer_user.this["bob"]
-aws_transfer_ssh_key.this["ben-0"]
-aws_transfer_ssh_key.this["ben-1"]
-aws_transfer_ssh_key.this["bob-0"]
-aws_transfer_ssh_key.this["bob-1"]
+aws_transfer_user.this["ben"]: Refreshing state...
+aws_transfer_user.this["bob"]: Refreshing state...
+aws_transfer_ssh_key.this["ben-0"]: Refreshing state...
+aws_transfer_ssh_key.this["ben-1"]: Refreshing state...
+aws_transfer_ssh_key.this["bob-0"]: Refreshing state...
+aws_transfer_ssh_key.this["bob-1"]: Refreshing state...
 ```
