@@ -287,3 +287,13 @@ $ terraform console
   }
 }
 ```
+
+If you run a Terraform plan you should see resources like the following:
+```
+aws_transfer_user.this["ben"]
+aws_transfer_user.this["bob"]
+aws_transfer_ssh_key.this["ben-0"]
+aws_transfer_ssh_key.this["ben-1"]
+aws_transfer_ssh_key.this["bob-0"]
+aws_transfer_ssh_key.this["bob-1"]
+```
