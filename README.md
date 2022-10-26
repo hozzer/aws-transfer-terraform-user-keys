@@ -74,9 +74,9 @@ $ terraform console
 Let's create another local variable `flat_users` which will iterate over `local.raw_users` and return the data in a structure that can be used with `aws_transfer_user` and `aws_transfer_ssh_key` resources blocks:
 ```terraform
 locals {
-
-  ...
-  
+  raw_users = {
+    ...
+  }
   flat_users =  flatten([
     for users in local.raw_users : [
       for key in users.ssh_public_keys : {
